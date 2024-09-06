@@ -38,7 +38,7 @@ int main(){
             cerr << "Error getting current working directory" << endl;
         }
         string current_path = buffer;
-        if(getOsName() == "Mac OSX"){
+        if(getOsName() == "Mac OSX" || getOsName() == "Linux"){
             current_directory = current_path.substr(current_path.find_last_of("/") + 1, current_path.length());
         }
         else if(getOsName() == "Windows 32-bit" || getOsName() == "Windows 64-bit"){
@@ -134,7 +134,7 @@ int main(){
         }
         else if(choice == 5){
             string new_directory_path;
-            if(getOsName() == "Mac OSX"){
+            if(getOsName() == "Mac OSX" || getOsName() == "Linux"){
                 new_directory_path = current_path.substr(0, current_path.find_last_of("/"));
             }
             else if(getOsName() == "Windows 32-bit" || getOsName() == "Windows 64-bit"){
@@ -252,6 +252,8 @@ string getOsName()
     return "Windows 64-bit";
     #elif __APPLE__ || __MACH__
     return "Mac OSX";
+    #elif __linux__
+    return "Linux";
     #endif
 }                      
 
