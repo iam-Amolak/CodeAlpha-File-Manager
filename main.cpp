@@ -1,15 +1,14 @@
 #include<iostream>
 #include<fstream>
-#include<filesystem>
 #include<stdio.h>
 #include<cstdio>
 #include <dirent.h>
 #include<string>
-#include <curses.h>
 #include <unistd.h>
-#include "../../../../Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/sys/stat.h"
+#include "sys/stat.h"
 using namespace std;
 
+string getOsName(void);
 void print_welcomeMsg(void);
 void pause_own(void);
 string create_file(string);
@@ -33,12 +32,18 @@ int main(){
         cout<<"\n************************************************\n\n";
         const size_t size = 1024; 
         char buffer[size]; 
+        string current_directory;
         if (getcwd(buffer, size) != NULL) {} 
         else {
             cerr << "Error getting current working directory" << endl;
         }
         string current_path = buffer;
-        string current_directory = current_path.substr(current_path.find_last_of("/") + 1, current_path.length());
+        if(getOsName() == "Mac OSX"){
+            current_directory = current_path.substr(current_path.find_last_of("/") + 1, current_path.length());
+        }
+        else if(getOsName() == "Windows 32-bit" || getOsName() == "Windows 64-bit"){
+            current_directory = current_path.substr(current_path.find_last_of("\\") + 1, current_path.length());
+        }
         cout<<"_______________________________________________________________\n";
         cout<<endl<<"  Current Directory : "<<current_directory<<endl;
         cout<<"_______________________________________________________________\n"<<endl;
@@ -128,7 +133,13 @@ int main(){
             continue;
         }
         else if(choice == 5){
-            string new_directory_path = current_path.substr(0, current_path.find_last_of("/"));
+            string new_directory_path;
+            if(getOsName() == "Mac OSX"){
+                new_directory_path = current_path.substr(0, current_path.find_last_of("/"));
+            }
+            else if(getOsName() == "Windows 32-bit" || getOsName() == "Windows 64-bit"){
+                new_directory_path = current_path.substr(0, current_path.find_last_of("\\"));
+            }
             int res = chdir(new_directory_path.c_str());
             if(res == -1){
                 cout<<endl<<"Directory does not exist..."<<endl;
@@ -232,6 +243,17 @@ int main(){
 
     return 0;
 }
+
+string getOsName()
+{
+    #ifdef _WIN32
+    return "Windows 32-bit";
+    #elif _WIN64
+    return "Windows 64-bit";
+    #elif __APPLE__ || __MACH__
+    return "Mac OSX";
+    #endif
+}                      
 
 void print_welcomeMsg(){
 	cout<<"\n\n";
